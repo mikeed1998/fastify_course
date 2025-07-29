@@ -1,16 +1,26 @@
 import fastify from "fastify";
+import pingRoutes from "./routes/ping.routes";
+import tasksRoutes from "./routes/tasks.routes";
 
 
-const app = fastify({
+const _fastify = fastify({
     logger: true
 });
+
+_fastify.register(pingRoutes);
+_fastify.register(tasksRoutes);
 
 const start = async() => {
 
     try {
-        await app.listen({ port: 3000 });
+        await _fastify.listen({ port: 3000 });
+
+        // _fastify.log.info(`Server listening on port 3000`);
+        // console.log('first');
+        _fastify.log.error('Server listening on port 3000');
+
     } catch(error) {
-        console.log(error);
+        _fastify.log.error(error);
     }
 
 }
