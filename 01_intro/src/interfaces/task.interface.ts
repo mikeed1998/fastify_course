@@ -5,4 +5,15 @@ export interface TaskEntity {
     title: string;
     description: string;
     done: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface FindByIdTaskEntity {
+    id: string;
+}
+
+export interface CreateTaskDatasourceEntity {
+    title: string;
+    description: string;
 }

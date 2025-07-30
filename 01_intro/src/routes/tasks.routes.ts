@@ -12,7 +12,9 @@ const tasksRoutes = async (fastify: FastifyInstance) => {
     const tasksController = new TasksController();
 
     fastify.get('/tasks', tasksController.findAll);
+    fastify.get('/tasks/:id', tasksController.finOneById);
     fastify.post('/tasks', tasksController.create);
+    fastify.patch('/tasks/:id', tasksController.update);
 
 }
 
