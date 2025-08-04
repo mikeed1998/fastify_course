@@ -1,9 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import PdfPrinter from "pdfmake";
-import fs from 'node:fs';
+import { Readable } from 'node:stream';
 
-
-// reports.controller.ts
 export class ReportsController {
     private printer;
 
@@ -33,7 +31,15 @@ export class ReportsController {
         reply.header('Content-Type', 'application/pdf');
         reply.header('Content-Disposition', 'inline; filename=invoice.pdf');
         
-        // Enviar el PDF directamente sin crear archivo temporal
-        return reply.send(pdfDoc);
+        // Convertir el PDF a un stream legible
+        const pdfStream = new Readable();
+        pdfStream._read = () => {}; // Método _read vacío requerido
+        
+        pdfDoc.on('data', (chunk) => pdfStream.push(chunk));
+        pdfDoc.on('end', () => pdfStream.push(null));
+        
+        pdfDoc.end();
+        
+        return reply.send(pdfStream);
     }
 }
