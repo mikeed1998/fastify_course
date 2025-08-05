@@ -2,9 +2,13 @@ import fastify from "fastify";
 import fsRoutes from "./routes/fs.routes";
 import { FsMiddleware } from "./middleware/fs.middleware";
 import reportsRoutes from "./routes/reports.routes";
+import pgPlugin from "./plugins/pgPlugin";
+import dbRoutes from "./routes/db.routes";
 
 
 const _fastify = fastify({ logger: true });
+
+_fastify.register(pgPlugin);
 
 _fastify.addHook('onRequest', FsMiddleware.verifyIsExistFilesDir);
 
@@ -14,6 +18,10 @@ _fastify.register(fsRoutes, {
 
 _fastify.register(reportsRoutes, {
     prefix: '/reports'
+});
+
+_fastify.register(dbRoutes, {
+    prefix: '/db'
 });
 
 const start = async () => {
