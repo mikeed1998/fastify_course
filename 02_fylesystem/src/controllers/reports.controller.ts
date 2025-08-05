@@ -1,6 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import PdfPrinter from "pdfmake";
-import { Readable } from 'node:stream';
+import fs from 'node:fs';
+import { createInvoiceReport } from './../reports/invoice.report';
+
 
 export class ReportsController {
     private printer;
@@ -19,27 +21,41 @@ export class ReportsController {
     }
 
     getInvoice = async (request: FastifyRequest, reply: FastifyReply) => {
-        const docDefinition = {
-            content: [
-                { text: 'Hello World', fontSize: 20 }
-            ]
-        };
+
+        const docDefinition = createInvoiceReport();
         
         const pdfDoc = this.printer.createPdfKitDocument(docDefinition);
         
         // Configurar headers correctamente
         reply.header('Content-Type', 'application/pdf');
-        reply.header('Content-Disposition', 'inline; filename=invoice.pdf');
-        
-        // Convertir el PDF a un stream legible
-        const pdfStream = new Readable();
-        pdfStream._read = () => {}; // Método _read vacío requerido
-        
-        pdfDoc.on('data', (chunk) => pdfStream.push(chunk));
-        pdfDoc.on('end', () => pdfStream.push(null));
-        
+        reply.header('Content-Disposition', 'inline');
+
+        pdfDoc.pipe(fs.createWriteStream('reports/invoice.pdf'));
+        pdfDoc.pipe(reply.raw);
         pdfDoc.end();
         
-        return reply.send(pdfStream);
+        return reply.send(fs.createReadStream('reports/invoice.pdf', 'utf-8'));
+    }
+
+    getClientInvoiceByProductId = async (
+        request: FastifyRequest, 
+        reply: FastifyReply
+    ) => {
+
+        const { id } = request.params as { id: string };
+
+        const docDefinition = createInvoiceReport();
+        
+        const pdfDoc = this.printer.createPdfKitDocument(docDefinition);
+        
+        // Configurar headers correctamente
+        reply.header('Content-Type', 'application/pdf');
+        reply.header('Content-Disposition', 'inline');
+
+        pdfDoc.pipe(fs.createWriteStream('reports/invoice.pdf'));
+        pdfDoc.pipe(reply.raw);
+        pdfDoc.end();
+        
+        return reply.send(fs.createReadStream('reports/invoice.pdf', 'utf-8'));
     }
 }

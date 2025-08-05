@@ -13,5 +13,4 @@ const fsRoutes = async (fastify: FastifyInstance) => {
 
 }
 
-
 export default fastifyPlugin(fsRoutes);
