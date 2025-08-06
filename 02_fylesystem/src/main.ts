@@ -4,11 +4,18 @@ import { FsMiddleware } from "./middleware/fs.middleware";
 import reportsRoutes from "./routes/reports.routes";
 import pgPlugin from "./plugins/pgPlugin";
 import dbRoutes from "./routes/db.routes";
+import mailRoutes from "./routes/mail.routes";
+import fastifyEnv from "@fastify/env";
 
 
 const _fastify = fastify({ logger: true });
 
-_fastify.register(pgPlugin);
+// _fastify.register(pgPlugin);
+
+_fastify.register(fastifyEnv, {
+    dotenv: true,
+    schema: {},
+});
 
 _fastify.addHook('onRequest', FsMiddleware.verifyIsExistFilesDir);
 
@@ -18,6 +25,10 @@ _fastify.register(fsRoutes, {
 
 _fastify.register(reportsRoutes, {
     prefix: '/reports'
+});
+
+_fastify.register(mailRoutes, {
+    prefix: '/mail'
 });
 
 _fastify.register(dbRoutes, {
