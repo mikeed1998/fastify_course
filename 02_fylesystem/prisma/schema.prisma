@@ -13,11 +13,12 @@ model users {
   first_name     String?  @db.VarChar(100)
   last_name      String?  @db.VarChar(100)
   country        String?  @db.VarChar(150)
-  email          String?  @db.VarChar(200)
+  email          String?  @unique(map: "unique_email") @db.VarChar(200)
   favorite_color String?  @db.VarChar(100)
   followers      Int?
-  username       String?  @db.VarChar(100)
+  username       String?  @unique(map: "unique_username") @db.VarChar(100)
   website        String?  @db.VarChar(200)
   zodiac_sign    String?  @db.VarChar(100)
   active         Boolean? @default(true)
+  password       String?
 }

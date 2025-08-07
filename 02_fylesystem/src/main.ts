@@ -2,13 +2,13 @@ import fastify from "fastify";
 import fsRoutes from "./routes/fs.routes";
 import { FsMiddleware } from "./middleware/fs.middleware";
 import reportsRoutes from "./routes/reports.routes";
-import pgPlugin from "./plugins/pgPlugin";
 import dbRoutes from "./routes/db.routes";
 import mailRoutes from "./routes/mail.routes";
 import fastifyEnv from "@fastify/env";
 import authPlugin from "./plugins/auth.plugin";
-import authRoutes from "./routes/auth.routes";
+import pgPlugin from "./plugins/pgPlugin";
 import signJWTPlugin from "./plugins/signJWT.plugin";
+import authRoutes from "./routes/auth.routes";
 import fastifyJwt from "@fastify/jwt";
 
 
@@ -18,19 +18,18 @@ const _fastify = fastify({ logger: true });
 const start = async () => {
     try {
 
-        await _fastify.register(fastifyEnv, {
-            dotenv: true,
-            schema: {},
-        });
+        // await _fastify.register(fastifyEnv, {
+        //     dotenv: true,
+        //     schema: {},
+        // });
 
-        _fastify.register(fastifyJwt, 
-            {
-                secret: process.env.JWT_SECRET,
-            } as any
-        );
+        _fastify.register(fastifyJwt, {
+            secret: process.env.JWT_SECRET,
+        } as any);
 
+        _fastify.register(pgPlugin);
         _fastify.register(authPlugin);
-        _fastify.register(signJWTPlugin);
+        // _fastify.register(signJWTPlugin);
 
         _fastify.addHook('onRequest', FsMiddleware.verifyIsExistFilesDir);
 
